@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  mysql:
+    build: .
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./database_setup.sql:/docker-entrypoint-initdb.d/database_setup.sql
+

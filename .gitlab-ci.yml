@@ -1,0 +1,82 @@
+image: "rust:latest"
+
+default:
+  before_script:
+    - rustc --version
+    - cargo --version
+
+stages:
+  - build
+  - test
+  - quality
+  - security
+#  - documentation
+
+build-code:
+  stage: build
+  script:
+    - cargo build
+
+unittest-code:
+  stage: test
+  needs: [build-code]
+  script:
+    - cargo test
+
+lint-code:
+  stage: quality
+  script:
+    - rustup component add clippy
+    - cargo clippy -- -D warnings
+
+format-code:
+  stage: quality
+  script:
+    - rustup component add rustfmt
+    - cargo fmt --check
+
+coverage-code:
+  stage: quality
+  needs: [build-code]
+  before_script:
+    - mkdir -p $CARGO_HOME
+    - cargo install cargo-tarpaulin
+  script:
+    - cargo tarpaulin --engine llvm --ignore-tests --out Xml
+  coverage: '/^\d+.\d+% coverage/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura.xml
+
+doc-code:
+  stage: quality
+  script:
+    - cargo doc --no-deps
+
+benchmark-code:
+  stage: quality
+  script:
+    - cargo bench
+
+audit-code:
+  stage: security
+  before_script:
+    - cargo install cargo-audit
+  script:
+    - cargo audit --json > gl-dependency-scanning-report.json
+  artifacts:
+    when: always
+    reports:
+      dependency_scanning: gl-dependency-scanning-report.json
+#doc-sad:
+#  stage: documentation
+#  before_script:
+#    - apt-get install -y pandoc
+#  script:
+#    - pandoc ./doc/arc42-template-DE.md -o ./doc/arc42-template-DE.pdf
+#  artifacts:
+#    paths:
+#      - ./doc/arc42-template-DE.pdf
+
