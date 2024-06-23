@@ -11,6 +11,3 @@
 ### Testen
 - Zum Ausführen der Unit-Tests muss das [Test-Skript](execute_test.sh) verwendet werden
 - Das abgefragte Passwort für die Datenbank haben wir aus Sicherheitsgründen in die Moodle-Abgabe geschrieben
-
-### Dokumentation
-- Anforderungen können teilweise [in diesem Projekt](doc), aber hauptsächlich auf [RedMine](https://fei-vm-004.hs-coburg.de/projects) gefunden werden
